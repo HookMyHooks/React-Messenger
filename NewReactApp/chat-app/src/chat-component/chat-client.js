@@ -4,8 +4,9 @@ import io from 'socket.io-client'; //connect as a client
 
 //Initialize socket connection
 const socket = io('http://192.168.0.108:5000');
+//http://25.65.131.176:5000
 
-const Chat = () => {
+const ChatClient = () => {
   const [messages, setMessages] = useState([]); //state to store all received messages
   const [message, setMessage] = useState(''); //state to store the current message input by user 
 
@@ -48,4 +49,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default ChatClient;
