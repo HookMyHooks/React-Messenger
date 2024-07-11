@@ -1,9 +1,16 @@
 import React from "react";
 import "./LoginPage.css"
-
+import { useNavigate } from 'react-router-dom';
 
 function LoginPage()
 {
+    const navigate = useNavigate();
+
+    const handleCancel = () => {
+        navigate('/');
+    };
+
+
     return(
         <form>
             <div className = "loginDiv">
@@ -19,7 +26,7 @@ function LoginPage()
                 </label>
             </div>
             <div className="ButtonDiv">
-                <button type="button" className="CancelButton"> Cancel</button>
+                <button type="button" className="CancelButton" onClick={handleCancel}> Cancel</button>
                 <button type="submit" className="LoginButton">LogIn</button>
             </div>
         </form>
