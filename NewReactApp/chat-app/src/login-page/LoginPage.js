@@ -16,14 +16,19 @@ function LoginPage()
             <div className = "loginDiv">
                 <h1 className="LoginText">Login With Your Credentials</h1>
 
-                <label>Username: 
-                    <input type="text" name ="username"/>
-                </label>
+                <div className="wrap-input-7">
+                    <input className="input" type="text" placeholder="Username" />
+                    <span className="focus-border">
+                        <i />
+                    </span>
+                </div>
 
-                <label>
-                    Password:
-                    <input type="text" name="password"/>
-                </label>
+                <div className="wrap-input-7">
+                    <input className="input" type="text" placeholder="Password" />
+                    <span className="focus-border">
+                        <i />
+                    </span>
+                </div>
             </div>
             
             <div className="buttonContainer">
@@ -34,6 +39,9 @@ function LoginPage()
             
         </form>
                 //for now navigate to "/" in both cases
+
+               
+              
     )
 
 }
