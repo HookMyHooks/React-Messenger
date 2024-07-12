@@ -1,35 +1,34 @@
-.LoginText{
-    text-align: center;
-    margin-top: 30px;
-    margin-bottom: 50px;
+/* Basic styles */
+.loginDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10vh; /* Responsive vertical alignment */
 }
 
-.loginDiv{
-    text-align: center;
-    justify-content: center;
+.LoginText {
+    margin-bottom: 20px; /* Space between title and fields */
 }
 
 label {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 10px 0;
+    margin-bottom: 10px;
 }
 
 input {
-    margin: 5px 0;
+    width: 80%; /* Responsive width */
+    padding: 10px;
+    margin-top: 5px;
 }
 
-.ButtonDiv
-{
-    margin-left:500px;
+.buttonContainer {
     display: flex;
-    justify-content: space-between;
-    width: 360px; /* Adjust the width as needed */
-    margin-top: 100px;
+    justify-content: center; /* Ensures buttons are centered */
+    gap: 300px; /* Adds space between buttons */
+    padding-top: 20px; /* Adds some space above the buttons */
 }
-
-
 
 .LoginButton, .CancelButton {
     background-color: beige;
@@ -37,6 +36,49 @@ input {
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
+    min-width: 100px; /* Ensures buttons are not too narrow */
+}
+
+.LoginButton:hover {
+    background-color: #a4c5e7;
+}
+
+.CancelButton:hover {
+    background-color: #c82333;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .loginDiv {
+        margin-top: 20px; /* Less vertical space on small devices */
+    }
+
+    .LoginText {
+        font-size: 1.5rem; /* Smaller font on small devices */
+    }
+
+    label {
+        margin-bottom: 8px; /* Less margin */
+    }
+
+    input {
+        padding: 8px;
+    }
+
+    .buttonContainer {
+        flex-direction: column; /* Stack buttons vertically */
+    }
+
+    .LoginButton, .CancelButton {
+        width: 100%; /* Full width buttons */
+        margin: 5px 0; /* Stack with space */
+    }
+}
+
+@media (max-width: 480px) {
+    .LoginText {
+        font-size: 1.2rem; /* Even smaller font for very small devices */
+    }
 }
 
 .LoginButton:hover {

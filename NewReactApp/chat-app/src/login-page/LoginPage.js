@@ -25,13 +25,17 @@ function LoginPage()
                     <input type="text" name="password"/>
                 </label>
             </div>
-            <div className="ButtonDiv">
+            
+            <div className="buttonContainer">
                 <button type="button" className="CancelButton" onClick={handleCancel}> Cancel</button>
-                <button type="submit" className="LoginButton">LogIn</button>
+                <button type="submit" className="LoginButton" onClick={handleCancel}>LogIn </button> 
+                   
             </div>
+            
         </form>
-
+                //for now navigate to "/" in both cases
     )
+
 }
 
 export default LoginPage;
