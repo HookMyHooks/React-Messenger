@@ -6,7 +6,7 @@ import io from 'socket.io-client'; //connect as a client
 const socket = io('http://192.168.0.108:5000');
 //http://25.65.131.176:5000
 
-const ChatClient = () => {
+const ChatClient = ({username}) => {
   const [messages, setMessages] = useState([]); //state to store all received messages
   const [message, setMessage] = useState(''); //state to store the current message input by user 
 
@@ -22,11 +22,19 @@ const ChatClient = () => {
 
   const sendMessage = () => //send the message to server - to the 'message' event handling
   {
-    socket.emit('message', message);
-    setMessage(''); //set the current message to the empty string
+    const messageObject = {username, content:message}
+    if(message != ""){
+      socket.emit('message', messageObject);
+      setMessage(''); //set the current message to the empty string
+    }
   };
 
-
+  const handleKeyDown = (e) =>
+  {
+    if(e.key == 'Enter'){
+      sendMessage();
+    }
+  }
 
   return (
     <div>
@@ -34,7 +42,9 @@ const ChatClient = () => {
         {
           messages.map((msg, index) => 
             (
-              <div key={index}>{msg}</div>
+              <div key={index}>
+                <strong>{msg.username}</strong>: {msg.content}
+              </div>
             )
           ) //render each message that has been mapped in a 'div'
         }
@@ -43,6 +53,7 @@ const ChatClient = () => {
         type="text"
         value={message} //bind the input value to the 'message' state
         onChange={(e) => setMessage(e.target.value)} //update the message state with the current input value
+        onKeyDown={handleKeyDown}
       />
       <button onClick={sendMessage}>Send</button>
     </div>

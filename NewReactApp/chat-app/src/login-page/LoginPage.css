@@ -29,99 +29,25 @@ label {
 }
 
 
-.LoginButton,
-.LoginButton *,
-.LoginButton :after,
-.LoginButton :before,
-.LoginButton:after,
-.LoginButton:before {
-  border: 0 solid;
-  box-sizing: border-box;
-}
-.LoginButton {
-  -webkit-tap-highlight-color: transparent;
-  appearance: button;
-  -webkit-appearance: button;
-  background-color: #000;
-  background-image: none;
-  color: #fff;
-  cursor: pointer;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
-    Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-  font-size: 100%;
-  font-weight: 900;
-  line-height: 1.5;
-  margin: 0;
-  mask-image: radial-gradient(#000,#fff);
-  -webkit-mask-image: -webkit-radial-gradient(#000, #fff);
-  padding: 0;
-  text-transform: uppercase;
-}
-.LoginButton:disabled {
-  cursor: default;
-}
-.LoginButton:-moz-focusring {
-  outline: auto;
-}
-.LoginButton svg {
 
-  display: block;
-}
-.LoginButton [hidden] {
-  display: none;
-}
-.LoginButton {
-  border-radius: 99rem;
-  border-width: 2px;
-  overflow: hidden;
-  padding: 0.8rem 3rem;
-  position: relative;
-}
-.LoginButton span {
-  mix-blend-mode: difference;
-}
-.LoginButton:before {
-  background: rgb(54, 164, 238);
-
-  content: "LOGIN";
-  display:block;
-  height: 100%;
-  left: -100%;
-  position: absolute;
-  top: 0;
-  transform: skew(0deg) translateX(-20%);
-  transition: transform 0.4s ease;
-  width: 120%;
-
-}
-.LoginButton:hover:before {
-  text-transform: inherit;
-
-  transform: skew(45deg) translateX(75%);
-
-}
-
-
-/*
 .LoginButton, .CancelButton {
     background-color: beige;
     border: 1px solid;
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
-    min-width: 100px; /* Ensures buttons are not too narrow 
+    min-width: 100px; /* Ensures buttons are not too narrow*/
 }
-*/
 
-/*
+
+
 .LoginButton:hover {
     background-color: #a4c5e7;
 }
 
 .CancelButton:hover {
     background-color: #c82333;
-}*/
+}
 
 /* Media Queries */
 @media (max-width: 768px) {
@@ -142,10 +68,10 @@ label {
     }
 
 
-    /*
+    
     .LoginButton, .CancelButton {
-        width: 20%; /* Full width buttons 
-        margin: 5px 0; /* Stack with space 
+        width: 20%; /* Full width buttons */
+        margin: 5px 0; /* Stack with space */
         background-color: beige;
         border: 1px solid;
         padding: 0.5rem 1rem;
@@ -153,7 +79,7 @@ label {
         cursor: pointer;
         min-width: 100px;
     }
-    */
+    
 }
 
 
@@ -172,7 +98,7 @@ label {
 }
 
 .wrap-input-7 {
-  width: 20%;
+  width: 30%;
   margin: 40px 3%;
   position: relative;
 }
