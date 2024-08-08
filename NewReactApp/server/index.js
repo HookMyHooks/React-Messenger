@@ -24,29 +24,11 @@ function PasswordHash(passString) {
   return h;
 }
 
-// Track connected clients
-const connectedClients = [];
+
 
 // Handle Socket Connections
 io.on('connection', (socket) => {
   console.log('New client connected');
-
-  // Handle user registration or login via socket
-  const addClient = (username) => {
-    // Check if the user is already connected
-    if (!connectedClients.some(client => client.username === username)) {
-      connectedClients.push({ id: socket.id, username });
-      io.emit('clientsUpdated', connectedClients); // Notify all clients
-    }
-  };
-
-  socket.on('register', (username) => {
-    addClient(username);
-  });
-
-  socket.on('login', (username) => {
-    addClient(username);
-  });
 
   socket.on('message', (message) => {
     io.emit('message', message);
@@ -54,16 +36,12 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
-    // Remove client from the list
-    const index = connectedClients.findIndex(client => client.id === socket.id);
-    if (index !== -1) {
-      connectedClients.splice(index, 1);
-      io.emit('clientsUpdated', connectedClients); // Notify all clients
-    }
   });
 });
 
+
 //***** ROUTES *****\\
+
 
 // Login route
 app.post('/login', async (req, res) => {
@@ -84,9 +62,12 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Register Route
-app.put('/register', async (req, res) => {
-  let { username, password } = req.body;
+
+//Register Route
+
+app.put('/register', async(req,res) =>
+{
+  let {username,password} = req.body;
   console.log("register route called");
 
   try {
@@ -100,7 +81,7 @@ app.put('/register', async (req, res) => {
 
     // Insert the new user into the database
     const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;', [username, password]);
-
+    
     if (result.rows.length > 0) {
       res.json({ success: true, message: 'User registered successfully' });
     } else {
@@ -112,10 +93,7 @@ app.put('/register', async (req, res) => {
   }
 });
 
-// Endpoint to get connected clients
-app.get('/clients', (req, res) => {
-  res.json({ clients: connectedClients });
-});
+
 
 //***** END ROUTES ******\\
 
