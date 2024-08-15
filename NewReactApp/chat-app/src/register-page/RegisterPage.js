@@ -2,16 +2,6 @@ import "./RegisterPage.css"
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
-
-function PasswordHash(passString) {
-    let len = passString.length;
-    let h = 0;
-    for (let i = 0; i < len; i++) {
-      h = 33 * h + passString.charCodeAt(i); // Use charCodeAt to get the Unicode value
-    }
-    return h;
-  }
-
 function RegisterPage({setIsLoggedIn})
 {
     const navigate = useNavigate();
@@ -36,7 +26,7 @@ function RegisterPage({setIsLoggedIn})
 
 
             // Send login data to the server
-            const response = await fetch('http://192.168.0.108:5000/register', {
+            const response = await fetch('http://192.168.0.107:5000/register', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

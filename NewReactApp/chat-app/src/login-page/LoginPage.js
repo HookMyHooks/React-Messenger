@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import "./LoginPage.css"
 import { useNavigate } from 'react-router-dom';
 
+
 function LoginPage({setIsLoggedIn})
 {
     const navigate = useNavigate();
 
     const [username,setUsername] = useState("");
     const [password,setPassword] = useState("");
-
     //handle Cancel Button
     const handleCancel = () => {
         navigate('/');
@@ -17,12 +17,13 @@ function LoginPage({setIsLoggedIn})
 
 
     //handle Login Button
-    const handleLogin = async (e) => {
+    
+    /*const handleLogin = async (e) => {
         e.preventDefault();
 
         try {
             // Send login data to the server
-            const response = await fetch('http://192.168.0.108:5000/login', {
+            const response = await fetch('http://192.168.0.107:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -45,6 +46,37 @@ function LoginPage({setIsLoggedIn})
             alert('An error occurred. Please try again later.');
         }
     };
+    */
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+    
+        try {
+          const response = await fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
+          })
+              
+          const data = await response.json();
+    
+          if (response.ok) {
+            localStorage.setItem('token', data.token); // Store the JWT in local storage
+            navigate('/chat');
+            setIsLoggedIn(true);
+          } else {
+            console.error('Login failed:', data.message);
+            alert(data.message);
+          }
+        } catch (error) {
+          console.error('Error during login:', error);
+          alert('An error occurred during login. Please try again.');
+        }
+      };
+
+
 
     return (
         <form onSubmit={handleLogin}>

@@ -3,6 +3,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const pool = require('./db'); // Import the database connection
+const jwt = require('jsonwebtoken')
 
 const app = express();
 app.use(cors());
@@ -24,7 +25,7 @@ function PasswordHash(passString) {
   return h;
 }
 
-
+const SECRET_KEY = 'your_jwt_secret_key'; // Secret key for JWT
 
 // Handle Socket Connections
 io.on('connection', (socket) => {
@@ -40,24 +41,49 @@ io.on('connection', (socket) => {
 });
 
 
+// Middleware to verify JWT
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  console.log('Received token:', token); // Log the token
+  if (!token) {
+    return res.status(401).json({ message: 'Token required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    console.log('Decoded token on server:', decoded); // Log the decoded token
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error('Token verification error:', error); // Log the error details
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
 //***** ROUTES *****\\
 
 
 // Login route
 app.post('/login', async (req, res) => {
   let { username, password } = req.body;
-  console.log("post method accessed");
+  console.log("Login post method accessed");
+  console.log(`Received username: ${username}, password: ${password}`);
 
   try {
     password = PasswordHash(password);
+    console.log(`Hashed password: ${password}`);
+
     const result = await pool.query('SELECT * FROM users WHERE username = $1 AND password = $2;', [username, password]);
+    console.log('Query result:', result.rows);
+
     if (result.rows.length > 0) {
-      res.json({ success: true });
+      const token = jwt.sign({ userId: result.rows[0].id, username: result.rows[0].username }, SECRET_KEY, { expiresIn: '1h' });
+      res.json({ success: true, token });
     } else {
-      res.json({ success: false });
+      res.json({ success: false, message: 'Invalid username or password' });
     }
   } catch (err) {
-    console.error(err);
+    console.error('Server error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
@@ -94,6 +120,46 @@ app.put('/register', async(req,res) =>
 });
 
 
+
+
+// Protected route example
+app.get('/messages', verifyToken, async (req, res) => {
+  console.log("GET /messages accessed");
+  try {
+    const result = await pool.query('SELECT * FROM messages;');
+    console.log('Query result:', result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Server error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
+
+app.put('/messages', verifyToken, async (req, res) => {
+  const { text } = req.body; // Destructure to extract the text from req.body
+  console.log(text);
+  if (!text) {
+    return res.status(400).json({ success: false, message: 'Message text is required' });
+  }
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO messages (text) VALUES ($1) RETURNING id;',
+      [text]
+    ); 
+    
+    res.status(200).json({
+      success: true,
+      message: 'Message inserted into table',
+      messageId: result.rows[0].id, // Return the ID of the inserted message
+    });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 
 //***** END ROUTES ******\\
 

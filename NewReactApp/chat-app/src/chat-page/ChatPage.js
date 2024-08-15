@@ -1,17 +1,53 @@
-import React from 'react';
+import React,{useEffect,useState} from 'react';
 import './ChatPage.css'
 import ChatClient from '../chat-component/chat-client';
-import { useLocation } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+
+
 
 function ChatPage() {
-  const location = useLocation();
-  const { username } = location.state || {};
+  const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState('');
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      console.log('Decoded token:', decodedToken);
+      setUsername(decodedToken.username);
+
+      const fetchMessages = async () => {
+        const response = await fetch('http://localhost:5000/messages', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setMessages(data);
+        } else {
+          alert(data.message);
+        }
+      };
+
+      fetchMessages();
+    }
+  }, []);
 
   return (
     <div className="ChatPage">
       <header className="Chat-header">
         <h1>Chat App</h1>
-        <ChatClient username ={username}/>
+        {messages.map((msg) => (
+          <div key={msg.id}>
+            <strong>{username}:</strong>{msg.text}</div>
+        ))}
+        <ChatClient username={username}/>
+        <div>
+        
+        </div>
       </header>
     </div>
   );

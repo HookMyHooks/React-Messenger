@@ -8,11 +8,36 @@ import Home from './home-page/HomePage';
 import ChatPage from './chat-page/ChatPage';
 import LoginPage from './login-page/LoginPage';
 import "./App.css"
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import RegisterPage from './register-page/RegisterPage';
-
+import { jwtDecode } from 'jwt-decode';
+  
 function App() {
-const [isLoggedIn,setIsLoggedIn] = useState(false);
+
+  const [isLoggedIn,setIsLoggedIn] = useState(false);
+
+
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      const currentTime = Date.now() / 1000; // Convert milliseconds to seconds
+
+      if (decodedToken.exp < currentTime) {
+        // Token has expired
+        alert('Session has expired. Please log in again.');
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+      } else {
+        // Token is valid, user remains logged in
+        setIsLoggedIn(true);
+      }
+  } else {
+    setIsLoggedIn(false);
+  }
+}, []);
 
   return (
     <Router>
