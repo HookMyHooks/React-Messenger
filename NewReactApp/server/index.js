@@ -168,7 +168,7 @@ app.put('/messages', verifyToken, async (req, res) => {
 //Add friend
 app.post('/friends', verifyToken, async (req, res) => {
   const { friendId } = req.body;
-  const userId = req.user.id_user; // Assuming user_id is extracted from JWT
+  const userId = req.user.userId; 
 
   try {
     const result = await pool.query(
@@ -188,7 +188,7 @@ app.post('/friends', verifyToken, async (req, res) => {
 //Accept friend
 app.put('/friends/accept', verifyToken, async (req, res) => {
   const { friendId } = req.body;
-  const userId = req.user.id_user;
+  const userId = req.user.userId;
 
   try {
     const result = await pool.query(
