@@ -77,7 +77,10 @@ app.post('/login', async (req, res) => {
     console.log('Query result:', result.rows);
 
     if (result.rows.length > 0) {
-      const token = jwt.sign({ userId: result.rows[0].id, username: result.rows[0].username }, SECRET_KEY, { expiresIn: '1h' });
+      const token = jwt.sign({
+        userId: result.rows[0].id_user,
+        username: result.rows[0].username 
+      }, SECRET_KEY, { expiresIn: '1h' });
       res.json({ success: true, token });
     } else {
       res.json({ success: false, message: 'Invalid username or password' });
@@ -160,6 +163,70 @@ app.put('/messages', verifyToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+
+//Add friend
+app.post('/friends', verifyToken, async (req, res) => {
+  const { friendId } = req.body;
+  const userId = req.user.id_user; // Assuming user_id is extracted from JWT
+
+  try {
+    const result = await pool.query(
+      'INSERT INTO friends (user_id, friend_id, status) VALUES ($1, $2, $3) RETURNING *;',
+      [userId, friendId, 'pending']
+    );
+    res.status(200).json({ success: true, friendRequest: result.rows[0] });
+  } catch (err) {
+    console.error('Error adding friend:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
+
+
+//Accept friend
+app.put('/friends/accept', verifyToken, async (req, res) => {
+  const { friendId } = req.body;
+  const userId = req.user.id_user;
+
+  try {
+    const result = await pool.query(
+      'UPDATE friends SET status = $1 WHERE user_id = $2 AND friend_id = $3 RETURNING *;',
+      ['accepted', friendId, userId]
+    );
+    res.status(200).json({ success: true, friend: result.rows[0] });
+  } catch (err) {
+    console.error('Error accepting friend:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
+
+
+//List friends
+app.get('/friends', verifyToken, async (req, res) => {
+  const userID = req.user.userId;
+  console.log(userID);
+
+  try {
+    const result = await pool.query(
+      'SELECT u.id_user, u.username FROM users u ' +
+      'JOIN friends f ON (u.id_user = f.friend_id) ' +
+      'WHERE f.user_id = $1 AND f.status = $2;',
+      [userID, 'accepted']
+    );
+    
+    res.status(200).json({ success: true, friends: result.rows });
+  } catch (err) {
+    console.error('Error retrieving friends:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+
+
 
 //***** END ROUTES ******\\
 

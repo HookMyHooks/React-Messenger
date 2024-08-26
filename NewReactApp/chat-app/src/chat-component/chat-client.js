@@ -25,7 +25,7 @@ const ChatClient = ({username}) => {
     if (message.trim() !== "") {
       try {
         const token = localStorage.getItem('token'); // Get the token from local storage
-        const response = await fetch('http://localhost:5000/messages', { // Update with your actual API endpoint
+        const response = await fetch('http://192.168.0.107:5000/messages', { // Update with your actual API endpoint
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

@@ -2,7 +2,7 @@ import React,{useEffect,useState} from 'react';
 import './ChatPage.css'
 import ChatClient from '../chat-component/chat-client';
 import { jwtDecode } from 'jwt-decode';
-
+import FriendsList from '../friend-component/friend-component';
 
 
 function ChatPage() {
@@ -18,7 +18,7 @@ function ChatPage() {
       setUsername(decodedToken.username);
 
       const fetchMessages = async () => {
-        const response = await fetch('http://localhost:5000/messages', {
+        const response = await fetch('http://192.168.0.107:5000/messages', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -38,6 +38,12 @@ function ChatPage() {
 
   return (
     <div className="ChatPage">
+
+      <div className="friend-list-container">
+        <FriendsList>
+          Friends!
+        </FriendsList>
+      </div>
       <header className="Chat-header">
         <h1>Chat App</h1>
         {messages.map((msg) => (

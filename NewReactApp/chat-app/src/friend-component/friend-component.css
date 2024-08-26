@@ -1,0 +1,14 @@
+.friend-card {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #04ccb1;
+    margin-bottom: 10px;
+  }
+  
+  
+  .friend-card div {
+    color: blue;
+  }
+  
