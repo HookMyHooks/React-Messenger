@@ -11,6 +11,8 @@ import "./App.css"
 import { useState,useEffect } from 'react';
 import RegisterPage from './register-page/RegisterPage';
 import { jwtDecode } from 'jwt-decode';
+import FriendsPage from './friends-page/FriendsPage';
+import FriendChatPage from './chat-page/FriendChatPage';
   
 function App() {
 
@@ -51,6 +53,7 @@ function App() {
             {isLoggedIn && <Button color="inherit" component={Link} to="/chat">Chat</Button>}
             {!isLoggedIn && <Button color="inherit" component={Link} to="/login">Login</Button>}
             {!isLoggedIn && <Button color = "inherit" component ={Link} to = "/register">Register</Button>}
+            {isLoggedIn && <Button color = "inherit" component = {Link} to = "/friends">Friends</Button>}
           </Toolbar>
         </AppBar>
         <Routes>
@@ -58,6 +61,8 @@ function App() {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/register" element={<RegisterPage setIsLoggedIn={setIsLoggedIn}/>}/>
+          <Route path = "/friends" element = {<FriendsPage/>}/>
+          <Route path = "/chat/:friendId" element = {<FriendChatPage/>}/>
         </Routes>
       </div>
     </Router>

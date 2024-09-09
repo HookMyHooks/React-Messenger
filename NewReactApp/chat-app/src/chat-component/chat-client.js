@@ -20,6 +20,8 @@ const ChatClient = ({username}) => {
     };
   }, []);
 
+  
+
   const sendMessage = async () => { // send the message to server - to the 'message' event handling
     console.log(message);
     if (message.trim() !== "") {

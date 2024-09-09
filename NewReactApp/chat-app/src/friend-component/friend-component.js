@@ -1,12 +1,15 @@
 import './friend-component.css';
-
-
-
-
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+
+
+
 
 const FriendsList = () => {
   const [friends, setFriends] = useState([]);
+ const navigate = useNavigate();
+  
 
   useEffect(() => {
     console.log('Fetching friends...');
@@ -38,12 +41,18 @@ const FriendsList = () => {
     return <div>No friends to display.</div>;
   }
 
+  const handleFriendClick = (friendId) =>
+  {
+    console.log(friendId);
+    navigate(`/chat/${friendId}`);
+  }
+ 
   return (
     <div>
       
       {friends.map((friend) => (
-        <div key={friend.user_id} className="friend-card">
-          
+        <div key={friend.id_user} className="friend-card" onClick={()=>handleFriendClick(friend.id_user)}>
+
           <div>{friend.username}</div>
         </div>
       ))}

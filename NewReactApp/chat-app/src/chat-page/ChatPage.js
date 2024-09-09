@@ -40,8 +40,9 @@ function ChatPage() {
     <div className="ChatPage">
 
       <div className="friend-list-container">
+        
         <FriendsList>
-          Friends!
+      
         </FriendsList>
       </div>
       <header className="Chat-header">

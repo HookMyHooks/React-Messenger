@@ -3,7 +3,8 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const pool = require('./db'); // Import the database connection
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { connect } = require('http2');
 
 const app = express();
 app.use(cors());
@@ -26,17 +27,53 @@ function PasswordHash(passString) {
 }
 
 const SECRET_KEY = 'your_jwt_secret_key'; // Secret key for JWT
+let connectedUsers = {};
+
+
 
 // Handle Socket Connections
 io.on('connection', (socket) => {
   console.log('New client connected');
-
+/*
   socket.on('message', (message) => {
     io.emit('message', message);
+  });
+*/
+
+  socket.on('joinRoom', ({ userId, friendId }) => {
+    // Create a room with a unique name based on the user IDs
+    const room = [userId, friendId].sort().join('-');  // Create a room ID based on user IDs
+    socket.join(room);
+    console.log(`User ${userId} joined room ${room}`);
+  });
+
+  // Handle sending a message to a specific room
+  socket.on('message', (message) => {
+    const { senderId, receiverId, content } = message;
+    const room = [senderId, receiverId].sort().join('-'); // Ensure the room name is consistent
+    io.to(room).emit('message', message);  // Send the message to the room
+  });
+
+
+  //Handle User On-Connect
+  socket.on('join',(userId) =>
+  {
+    connectedUsers[userId] = socket.id; // Map userId to socket.id
+    io.emit('usersConnected', Object.keys(connectedUsers)); // Send the updated list of connected users to all clients
   });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');
+    for(const [userId,socketId] of Object.entries(connectedUsers))
+    {
+      if(socketId==socket.id)
+      {
+        delete connectedUsers[userId];
+        break;
+      }
+    }
+    io.emit('usersConnected', Object.keys(connectedUsers)); // Send the updated list of connected users to all clients
+
   });
 });
 
@@ -164,6 +201,30 @@ app.put('/messages', verifyToken, async (req, res) => {
   }
 });
 
+
+
+app.get('/api/messages', verifyToken, async (req, res) => {
+  const userId = req.user.userId;  // Assuming user is authenticated
+  const friendId = req.query.friendId;
+
+  try {
+    const messages = await db.query(`
+      SELECT * FROM individual_messages
+      WHERE (sender_id = $1 AND receiver_id = $2)
+         OR (sender_id = $2 AND receiver_id = $1)
+      ORDER BY timestamp ASC
+    `, [userId, friendId]);
+
+    if (messages.rows.length === 0) {
+      return res.json([]);  // Return an empty array if there are no messages
+    }
+
+    res.json(messages.rows);  // Return the messages as JSON
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ success: false, message: 'Server error fetching messages' });
+  }
+});
 
 //Add friend
 app.post('/friends', verifyToken, async (req, res) => {
