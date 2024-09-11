@@ -203,12 +203,16 @@ app.put('/messages', verifyToken, async (req, res) => {
 
 
 
-app.get('/api/messages', verifyToken, async (req, res) => {
+app.post('/api/messages', verifyToken, async (req, res) => {
   const userId = req.user.userId;  // Assuming user is authenticated
-  const friendId = req.query.friendId;
+  const { friendId } = req.body;
+  if (!friendId) {
+    return res.status(400).json({ success: false, message: 'Friend ID is required' });
+  }
+  console.log("messages method called");
 
   try {
-    const messages = await db.query(`
+    const messages = await pool.query(`
       SELECT * FROM individual_messages
       WHERE (sender_id = $1 AND receiver_id = $2)
          OR (sender_id = $2 AND receiver_id = $1)

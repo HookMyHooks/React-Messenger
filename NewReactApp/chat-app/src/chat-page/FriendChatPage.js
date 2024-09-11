@@ -48,20 +48,23 @@ const FriendChatPage = () => {
   const fetchMessages = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/messages?friendId=${friendId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await fetch(`http://192.168.0.107:5000/api/messages`, {
+        method: 'POST',  // Use POST instead of GET
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ friendId })  // Send friendId in the request body
       });
   
       // Check if the response status is OK (status 200)
       if (!response.ok) {
-        // Log the entire response for debugging
-        const errorText = await response.text();  // Get the raw response as text
+        const errorText = await response.text();
         console.error(`Error fetching messages: ${response.status} ${errorText}`);
         throw new Error(`Failed to fetch messages: ${response.status}`);
       }
   
-      // Parse the JSON response
-      const data = await response.json();
+      const data = await response.json();  // Parse the JSON response
       setMessages(data);  // Update the messages state with the data from the server
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -83,8 +86,9 @@ const FriendChatPage = () => {
     console.log(`User ${userId} with ${friendId}`);
   
     socket.emit('joinRoom', roomInfo);  // Tell the server to join the room
-    }
     fetchMessages(friendId);
+
+    }
   }, [friendId]);
   
   return (
