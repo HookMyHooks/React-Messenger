@@ -27,7 +27,7 @@ const ChatClient = ({username}) => {
     if (message.trim() !== "") {
       try {
         const token = localStorage.getItem('token'); // Get the token from local storage
-        const response = await fetch('http://192.168.0.107:5000/messages', { // Update with your actual API endpoint
+        const response = await fetch('http://192.168.0.107:5000/messages', { 
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -70,6 +70,7 @@ const ChatClient = ({username}) => {
             (
               <div key={index}>
                 <strong>{msg.username}</strong>: {msg.content}
+        
               </div>
             )
           ) //render each message that has been mapped in a 'div'

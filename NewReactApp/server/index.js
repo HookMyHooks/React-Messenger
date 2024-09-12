@@ -4,7 +4,6 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 const pool = require('./db'); // Import the database connection
 const jwt = require('jsonwebtoken');
-const { connect } = require('http2');
 
 const app = express();
 app.use(cors());
@@ -34,11 +33,11 @@ let connectedUsers = {};
 // Handle Socket Connections
 io.on('connection', (socket) => {
   console.log('New client connected');
-/*
+
   socket.on('message', (message) => {
     io.emit('message', message);
   });
-*/
+
 
   socket.on('joinRoom', ({ userId, friendId }) => {
     // Create a room with a unique name based on the user IDs
@@ -48,10 +47,11 @@ io.on('connection', (socket) => {
   });
 
   // Handle sending a message to a specific room
-  socket.on('message', (message) => {
-    const { senderId, receiverId, content } = message;
+    socket.on('message', (message) => {
+    const { senderId, receiverId, username, content } = message;
     const room = [senderId, receiverId].sort().join('-'); // Ensure the room name is consistent
-    io.to(room).emit('message', message);  // Send the message to the room
+    const messageWithUsername = { ...message, username };
+    io.to(room).emit('message', messageWithUsername);
   });
 
 
@@ -117,7 +117,7 @@ app.post('/login', async (req, res) => {
       const token = jwt.sign({
         userId: result.rows[0].id_user,
         username: result.rows[0].username 
-      }, SECRET_KEY, { expiresIn: '1h' });
+      }, SECRET_KEY, { expiresIn: '2h' });
       res.json({ success: true, token });
     } else {
       res.json({ success: false, message: 'Invalid username or password' });
@@ -202,6 +202,34 @@ app.put('/messages', verifyToken, async (req, res) => {
 });
 
 
+app.put('/api/messages',verifyToken,async(req,res) =>{
+  const {text,receiverId} = req.body;
+  const userId = req.user.userId;
+  console.log(text);
+  if (!text) {
+    return res.status(400).json({ success: false, message: 'Message text is required' });
+  }
+
+  try{
+    const result = await pool.query(
+      'INSERT INTO individual_messages (id,sender_id,receiver_id,content,timestamp) VALUES (DEFAULT,$1,$2,$3,DEFAULT) RETURNING *',
+      [userId,receiverId,text]
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Message sent', 
+      messageId:result.rows[0].id,
+    });
+  }catch(err){
+    console.error('Db error:', err);
+    res.status(500).json({
+      success: false, 
+      message:'Server error'
+    });
+  }
+
+});
+
 
 app.post('/api/messages', verifyToken, async (req, res) => {
   const userId = req.user.userId;  // Assuming user is authenticated
@@ -213,10 +241,23 @@ app.post('/api/messages', verifyToken, async (req, res) => {
 
   try {
     const messages = await pool.query(`
-      SELECT * FROM individual_messages
-      WHERE (sender_id = $1 AND receiver_id = $2)
-         OR (sender_id = $2 AND receiver_id = $1)
-      ORDER BY timestamp ASC
+      SELECT 
+        m.id, 
+        u1.username AS sender_username, 
+        u2.username AS receiver_username, 
+        m.content, 
+        m.timestamp
+      FROM 
+        individual_messages m
+      JOIN 
+        users u1 ON m.sender_id = u1.id_user
+      JOIN 
+        users u2 ON m.receiver_id = u2.id_user
+      WHERE 
+        (m.sender_id = $1 AND m.receiver_id = $2)
+        OR (m.sender_id = $2 AND m.receiver_id = $1)
+      ORDER BY 
+        m.timestamp ASC
     `, [userId, friendId]);
 
     if (messages.rows.length === 0) {
@@ -229,6 +270,7 @@ app.post('/api/messages', verifyToken, async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error fetching messages' });
   }
 });
+
 
 //Add friend
 app.post('/friends', verifyToken, async (req, res) => {
@@ -290,6 +332,28 @@ app.get('/friends', verifyToken, async (req, res) => {
   }
 });
 
+
+
+app.get('/api/users/:friendId',async(req,res)=>{
+  const {friendId} = req.params;
+  console.log('api/users/id called');
+  try{
+    const result = await pool.query(
+      'SELECT username from users where id_user = $1',[friendId]
+    );
+    if(result.rows.length ===0)
+      return res.status(404).json({
+        success:false,
+        message: 'Friend user not found'
+      });
+      console.log(result.rows[0].username);
+    res.json({username:result.rows[0].username}) 
+  }catch(err)
+  {
+    console.error('Error fetching username:', err);
+    res.status(500).json({ success: false, message: 'Server error fetching username' });
+  }
+})
 
 
 

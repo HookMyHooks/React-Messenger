@@ -1,1 +1,2 @@
 -avoid sql injection
+-security problems : id in the url

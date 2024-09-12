@@ -50,7 +50,6 @@ function App() {
               <Button color = "inherit" component = {Link} to="/">Local Messenger</Button>
             </Typography>
 
-            {isLoggedIn && <Button color="inherit" component={Link} to="/chat">Chat</Button>}
             {!isLoggedIn && <Button color="inherit" component={Link} to="/login">Login</Button>}
             {!isLoggedIn && <Button color = "inherit" component ={Link} to = "/register">Register</Button>}
             {isLoggedIn && <Button color = "inherit" component = {Link} to = "/friends">Friends</Button>}
@@ -58,7 +57,6 @@ function App() {
         </AppBar>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<ChatPage />} />
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
           <Route path="/register" element={<RegisterPage setIsLoggedIn={setIsLoggedIn}/>}/>
           <Route path = "/friends" element = {<FriendsPage/>}/>
