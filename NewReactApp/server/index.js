@@ -56,9 +56,10 @@ io.on('connection', (socket) => {
 
 
   //Handle User On-Connect
-  socket.on('join',(userId) =>
+  socket.on('join',(username) =>
   {
-    connectedUsers[userId] = socket.id; // Map userId to socket.id
+    connectedUsers[username] = socket.id; // Map userId to socket.id
+    console.log(connectedUsers);
     io.emit('usersConnected', Object.keys(connectedUsers)); // Send the updated list of connected users to all clients
   });
 
@@ -137,7 +138,7 @@ app.put('/register', async(req,res) =>
   console.log("register route called");
 
   try {
-    password = PasswordHash(password);
+    const newPassword = PasswordHash(password);
 
     // Check if the username already exists
     const userCheck = await pool.query('SELECT * FROM users WHERE username = $1;', [username]);
@@ -146,10 +147,17 @@ app.put('/register', async(req,res) =>
     }
 
     // Insert the new user into the database
-    const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;', [username, password]);
+    const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;', [username, newPassword]);
     
     if (result.rows.length > 0) {
-      res.json({ success: true, message: 'User registered successfully' });
+      console.log("ye");
+      console.log(result.rows[0]);
+      const token = jwt.sign({
+        userId: result.rows[0].id_user,
+        username: result.rows[0].username 
+      }, SECRET_KEY, { expiresIn: '2h' });
+      res.json({ success: true, message: 'User registered successfully' , token});
+
     } else {
       res.json({ success: false, message: 'Registration failed' });
     }

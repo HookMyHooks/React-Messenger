@@ -5,7 +5,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Home from './home-page/HomePage';
-import ChatPage from './chat-page/ChatPage';
 import LoginPage from './login-page/LoginPage';
 import "./App.css"
 import { useState,useEffect } from 'react';

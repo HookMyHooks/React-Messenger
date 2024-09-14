@@ -64,7 +64,7 @@ function LoginPage({setIsLoggedIn})
     
           if (response.ok) {
             localStorage.setItem('token', data.token); // Store the JWT in local storage
-            navigate('/chat');
+            navigate('/friends');
             setIsLoggedIn(true);
           } else {
             console.error('Login failed:', data.message);

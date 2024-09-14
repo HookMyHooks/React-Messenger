@@ -34,15 +34,17 @@ function RegisterPage({setIsLoggedIn})
                 body: JSON.stringify({ username, password })
             });
 
-            const result = await response.json();
-            console.log('Server response:', result);
+            const data = await response.json();
 
-            if (result.success) {
+            if (response.ok) {
+                localStorage.setItem('token', data.token); // Store the JWT in local storage
                 setIsLoggedIn(true);
-                navigate('/chat', {state:{username}}); // Redirect on successful login
+                navigate('/'); // Redirect on successful login
+
 
             } else {
                 alert('Invalid credentials, please try again.');
+                console.log(data.message);
             }
         } catch (error) {
             console.error('Error:', error);
