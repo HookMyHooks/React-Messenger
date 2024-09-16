@@ -3,14 +3,13 @@ import io from 'socket.io-client';
 import FriendsList from '../friend-component/friend-component';
 import { jwtDecode } from 'jwt-decode';
 import "./FriendsPage.css"
-import { useNavigate } from 'react-router-dom';
+import FriendRequests from './Incoming-Requests/friend-requests';
 
 const socket = io('http://192.168.0.107:5000'); // Your server URL
 
 const FriendsPage = () => {
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const navigate = useNavigate();
 
   const handleAddFriendClick = (user) => {
     setSelectedUser(user); // Set the selected user
@@ -21,11 +20,39 @@ const FriendsPage = () => {
     setSelectedUser(null); // Reset selected user to null
   };
 
-  const clickAddFriend =() => {
+  const clickAddFriend =async() => {
+    try {
+      console.log("de trimis:",selectedUser)
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://192.168.0.107:5000/addFriend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ username: selectedUser }),
+        
+      })
+
+      const data = await response.json();
+      if(response.ok)
+      {
+        alert("Friend added.");
+      }
+      else
+      {
+        console.log("error:",data.message);
+      }
+
+      setConnectedUsers(null);
+    }catch(err)
+    {
+
+    }
 
   }
 
-
+/*
   useEffect(()=>{
     const token = localStorage.getItem('token');
     var decodedToken = null;
@@ -37,7 +64,7 @@ const FriendsPage = () => {
       connectedUsers.splice(index, 1); // 2nd parameter means remove one item only
     }    // Listen for connected users
   })
-
+*/
   useEffect(() => {
     const token = localStorage.getItem('token');
     
@@ -48,7 +75,7 @@ const FriendsPage = () => {
     // Emit userId when the user joins
     const user = decodedToken.username;
     
-    socket.emit('join', user);
+  socket.emit('join', user);
   }
     return () => {
       socket.disconnect();
@@ -88,6 +115,8 @@ useEffect(()=>{
 
       <h2>Friends List</h2>
       <FriendsList></FriendsList>
+
+      <FriendRequests className ="friend-requests">Friend Requests:</FriendRequests>
     </div>
   );
 };

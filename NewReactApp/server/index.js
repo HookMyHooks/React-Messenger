@@ -111,7 +111,7 @@ app.post('/login', async (req, res) => {
     password = PasswordHash(password);
     console.log(`Hashed password: ${password}`);
 
-    const result = await pool.query('SELECT * FROM users WHERE username = $1 AND password = $2;', [username, password]);
+    const result = await pool.query('SELECT * FROM users u WHERE u.username = $1 AND u.password = $2;', [username, password]);
     console.log('Query result:', result.rows);
 
     if (result.rows.length > 0) {
@@ -281,16 +281,39 @@ app.post('/api/messages', verifyToken, async (req, res) => {
 
 
 //Add friend
-app.post('/friends', verifyToken, async (req, res) => {
-  const { friendId } = req.body;
+app.post('/addFriend', verifyToken, async (req, res) => {
+  const friendName  = req.body.username;
   const userId = req.user.userId; 
-
+  console.log("addFriend method called: ", friendName);
   try {
-    const result = await pool.query(
-      'INSERT INTO friends (user_id, friend_id, status) VALUES ($1, $2, $3) RETURNING *;',
-      [userId, friendId, 'pending']
-    );
-    res.status(200).json({ success: true, friendRequest: result.rows[0] });
+    const findFriendId = await pool.query(
+      'SELECT id_user FROM users WHERE username = $1;'
+    ,[friendName]);
+
+    if(findFriendId.rows.length > 0)
+    {
+      const friendId = findFriendId.rows[0].id_user;
+
+      const result  = await pool.query(
+        `INSERT INTO friends (user_id, friend_id,status) VALUES
+        ($1,$2,'pending') 
+        RETURNING *;`
+      ,[userId, friendId]);
+
+      if(result.rows.length > 0)
+      {
+        const message = "Friend Added";
+        console.log(message);
+        res.status(200).json({success: true, message: message});
+      }
+      else{
+        res.status(501).json({success: false, message: "Server query error"});
+      }
+    }
+    else{
+      console.log("User not found");
+      res.status(502).json({success:false, message:"User not found?"});
+    }
   } catch (err) {
     console.error('Error adding friend:', err);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -301,16 +324,39 @@ app.post('/friends', verifyToken, async (req, res) => {
 
 
 //Accept friend
-app.put('/friends/accept', verifyToken, async (req, res) => {
-  const { friendId } = req.body;
+app.post('/friend/accept', verifyToken, async (req, res) => {
+  const friendName = req.body.username;
   const userId = req.user.userId;
 
+  console.log("friend/accept friendname:", friendName)
+
   try {
-    const result = await pool.query(
-      'UPDATE friends SET status = $1 WHERE user_id = $2 AND friend_id = $3 RETURNING *;',
-      ['accepted', friendId, userId]
-    );
-    res.status(200).json({ success: true, friend: result.rows[0] });
+    const findFriendId = await pool.query(
+      'SELECT id_user FROM users WHERE username = $1;'
+    ,[friendName]);
+
+
+    if(findFriendId.rows.length>0)
+    {
+      const result = await pool.query(
+        'UPDATE friends SET status = $1 WHERE user_id = $2 AND friend_id = $3 RETURNING *;',
+        ['accepted', findFriendId.rows[0].id_user , userId]
+        );
+     
+        if(result.rows.length > 0 )
+        {
+          res.status(200).json({success: true, message: 'friend accepted'})
+        }
+        else
+        {
+          res.status(500).json({success:false, message:`Couldnt update to 'accepted' state`})
+        }
+     }    
+     else
+     {
+      res.status(501).json({success:false, message: `Couldnt find user`});
+     }
+
   } catch (err) {
     console.error('Error accepting friend:', err);
     res.status(500).json({ success: false, message: 'Server error' });
@@ -318,6 +364,35 @@ app.put('/friends/accept', verifyToken, async (req, res) => {
 });
 
 
+
+//List Pending Requests
+app.get('/friend/friendRequests', verifyToken, async(req,res) =>{
+
+  const userId = req.user.userId; 
+  console.log("friend requests method called: ");
+try{
+      const result  = await pool.query(
+        `SELECT f.*, u.username 
+         FROM friends f 
+         JOIN users u ON f.user_id = u.id_user 
+         WHERE f.friend_id = $1 AND f.status = 'pending'; `
+      ,[userId]);
+
+      if(result.rows.length > 0)
+      {
+        const message = "Friend Requests Found!";
+        console.log(message, result.rows);
+        res.status(200).json({success: true, message: message, pendingRequests: result.rows});
+      }
+      else{
+        res.status(401).json({success: true, message: "There are no requests", pendingRequests: []});
+      }
+    
+  } catch (err) {
+    console.error('Error adding friend:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 
 
 //List friends
@@ -332,8 +407,21 @@ app.get('/friends', verifyToken, async (req, res) => {
       'WHERE f.user_id = $1 AND f.status = $2;',
       [userID, 'accepted']
     );
-    
-    res.status(200).json({ success: true, friends: result.rows });
+      const query = await pool.query(
+        'SELECT u.id_user, u.username FROM users u ' +
+      'JOIN friends f ON (u.id_user = f.user_id) ' +
+      `WHERE f.friend_id = $1 AND f.status = 'accepted';`,
+      [userID]);
+
+      // Combine the results from both queries
+    const friendsList = [...result.rows, ...query.rows];
+
+    if (friendsList.length > 0) {
+      res.status(200).json({ success: true, message: "Found friends", friends: friendsList });
+    } else {
+      res.status(200).json({ success: true, message: "No friends found", friends: [] });
+    }
+
   } catch (err) {
     console.error('Error retrieving friends:', err);
     res.status(500).json({ success: false, message: 'Server error' });
