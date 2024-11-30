@@ -1,2 +1,3 @@
 -avoid sql injection
 -security problems : id in the url
+-password procedures: MD5 SHA1
