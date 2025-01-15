@@ -7,7 +7,7 @@ const path = require('path');
 class IPReplacer {
     constructor(directory) {
         this.directory = directory;
-        this.ipPattern = /http:\/\/192\.168\.0\.108/g; // Match the hardcoded IP
+        this.ipPattern = /http:\/\/192\.168\.188\.26/g; // Match the hardcoded IP
     }
 
     // Method to replace IP in a single file
