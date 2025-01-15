@@ -26,7 +26,7 @@ function RegisterPage({setIsLoggedIn})
 
 
             // Send login data to the server
-            const response = await fetch('http://192.168.0.107:5000/register', {
+            const response = await fetch('http://192.168.0.108:5000/register', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'

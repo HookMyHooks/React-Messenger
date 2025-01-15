@@ -16,7 +16,7 @@ const FriendsList = () => {
     const fetchFriends = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://192.168.0.107:5000/friends', {
+        const response = await fetch('http://192.168.0.108:5000/friends', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
