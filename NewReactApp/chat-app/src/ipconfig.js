@@ -7,7 +7,7 @@ const path = require('path');
 class IPReplacer {
     constructor(directory) {
         this.directory = directory;
-        this.ipPattern = /http:\/\/192\.168\.0\.107/g; // Match the hardcoded IP
+        this.ipPattern = /http:\/\/192\.168\.0\.108/g; // Match the hardcoded IP
     }
 
     // Method to replace IP in a single file
@@ -41,7 +41,7 @@ class IPReplacer {
 }
 
 // Usage Example
-const directory = 'E:\\Scoala\\facultate\\Practica\\React-Messenger\\NewReactApp\\chat-app\\src'; // Replace with the actual path to your project root
+const directory = 'D:\\Scoala\\Facultate\\Practica\\NewReactApp\\chat-app\\src'; // Replace with the actual path to your project root
 const replacer = new IPReplacer(directory);
-const newIP = '192.168.0.108'; // Replace with the desired IP
+const newIP = '192.168.188.26'; // Replace with the desired IP
 replacer.replaceIPInDirectory(newIP);

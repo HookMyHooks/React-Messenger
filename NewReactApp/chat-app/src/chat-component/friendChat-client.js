@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
 //Initialize socket connection
-const socket = io('http://192.168.0.108:5000');
+const socket = io('http://192.168.188.26:5000');
 
 const FriendChatClient = ({username}) => {
     const [messages, setMessages] = useState([]); //state to store all received messages
@@ -34,7 +34,7 @@ const FriendChatClient = ({username}) => {
     const decodedToken = jwtDecode(token);
     if (message.trim() !== "") {
       try {
-        const response = await fetch('http://192.168.0.108:5000/api/messages', { 
+        const response = await fetch('http://192.168.188.26:5000/api/messages', { 
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

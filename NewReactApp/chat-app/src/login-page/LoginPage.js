@@ -23,7 +23,7 @@ function LoginPage({setIsLoggedIn})
 
         try {
             // Send login data to the server
-            const response = await fetch('http://192.168.0.108:5000/login', {
+            const response = await fetch('http://192.168.188.26:5000/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ function LoginPage({setIsLoggedIn})
         e.preventDefault();
     
         try {
-          const response = await fetch('http://192.168.0.108:5000/login', {
+          const response = await fetch('http://192.168.188.26:5000/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

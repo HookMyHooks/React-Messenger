@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import FriendChatClient from '../chat-component/friendChat-client';
 
-const socket = io('http://192.168.0.108:5000'); // Your server URL
+const socket = io('http://192.168.188.26:5000'); // Your server URL
 
 const FriendChatPage = () => {
   // Create a state variable `messages` to hold the chat messages and a function `setMessages` to update it
@@ -18,7 +18,7 @@ const FriendChatPage = () => {
   const fetchMessages = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://192.168.0.108:5000/api/messages`, {
+      const response = await fetch(`http://192.168.188.26:5000/api/messages`, {
         method: 'POST',  
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -60,7 +60,7 @@ const FriendChatPage = () => {
 
       const fetchUsername = async () => {
        try {
-          const response = await fetch(`http://192.168.0.108:5000/api/users/${friendId}`);
+          const response = await fetch(`http://192.168.188.26:5000/api/users/${friendId}`);
         
           if (!response.ok) {
             throw new Error('Network response was not ok');

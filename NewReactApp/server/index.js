@@ -94,6 +94,7 @@ const verifyToken = (req, res, next) => {
     next();
   } catch (error) {
     console.error('Token verification error:', error); // Log the error details
+    console.log('Request Headers:', req.headers);
     return res.status(401).json({ message: 'Invalid token' });
   }
 };

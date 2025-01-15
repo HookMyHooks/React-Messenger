@@ -11,7 +11,7 @@ const FriendRequests = () => {
       try {
         console.log("de trimis:",selectedUser)
         const token = localStorage.getItem('token');
-        const response = await fetch('http://192.168.0.108:5000/friend/accept', {
+        const response = await fetch('http://192.168.188.26:5000/friend/accept', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ const FriendRequests = () => {
 
         try{
             const token = localStorage.getItem('token');
-            const response = await fetch('http://192.168.0.108:5000/friend/friendRequests', {
+            const response = await fetch('http://192.168.188.26:5000/friend/friendRequests', {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',

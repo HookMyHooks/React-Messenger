@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import "./FriendsPage.css"
 import FriendRequests from './Incoming-Requests/friend-requests';
 
-const socket = io('http://192.168.0.108:5000'); // Your server URL
+const socket = io('http://192.168.188.26:5000'); // Your server URL
 
 const FriendsPage = () => {
   const [connectedUsers, setConnectedUsers] = useState([]);
@@ -24,7 +24,7 @@ const FriendsPage = () => {
     try {
       console.log("de trimis:",selectedUser)
       const token = localStorage.getItem('token');
-      const response = await fetch('http://192.168.0.108:5000/addFriend', {
+      const response = await fetch('http://192.168.188.26:5000/addFriend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
